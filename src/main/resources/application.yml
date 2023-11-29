@@ -3,20 +3,28 @@ spring:
     name: ${APP_NAME}
   cloud:
     gateway:
-      discovery:
-        locator:
-          enabled: true
-          lower-case-service-id: true
+#      discovery:
+#        locator:
+#          enabled: true
+#          lower-case-service-id: true
       routes:
+      - id: users-service-login
+        uri: lb://users-service
+        predicates:
+        - Path=/api/v1/users/login
+        - Method=POST
+        filters:
+        - RemoveRequestHeader=Cookie
       - id: users-service
         uri: lb://users-service
         predicates:
         - Path=/api/v1/users/**
-#        - Path=/users-service/api/v1/users/**
         - Method=GET,POST,PUT,DELETE
+        - Header=Authorization, Bearer (.*)
         filters:
         - RemoveRequestHeader=Cookie
-#        - RewritePath=/users-service/(?<segment>.*), /$\{segment}
+        - RewritePath=/users-service/(?<segment>.*), /$\{segment}
+        - CustomAuthorizationHeaderFilter
 server:
   port: ${SERVER_PORT}
 eureka:
@@ -25,3 +33,8 @@ eureka:
       defaultZone: ${EUREKA_SERVER_URL}
   instance:
     prefer-ip-address: true
+tw:
+  niq:
+    token:
+      secret: ${TOKEN_SECRET}
+      expiration: ${TOKEN_EXPIRATION}
