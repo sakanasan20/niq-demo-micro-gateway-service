@@ -1,11 +1,1 @@
-spring:
-  application:
-    name: ${APP_NAME}
-server:
-  port: ${SERVER_PORT}
-eureka:
-  client:
-    service-url:
-      defaultZone: ${EUREKA_SERVER_URL}
-  instance:
-    prefer-ip-address: true
+
